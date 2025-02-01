@@ -1,0 +1,26 @@
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_ENV=production
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  openweb-ui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openweb-ui
+    ports:
+      - "3000:8080"
+    depends_on:
+      - ollama
+    environment:
+      - OPENWEB_UI_ENV=production
+      - OLLAMA_BASE_URL=http://ollama:11434
